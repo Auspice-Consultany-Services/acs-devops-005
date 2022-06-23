@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent jenkins-slave
     tools {
     maven 'Maven3' 
     }
@@ -24,19 +24,19 @@ pipeline {
         }
         
         
-        stage('sonar_analysis') {
-            steps {
-                withSonarQubeEnv('sonar') { 
-                sh 'mvn clean package sonar:sonar'           
-            }
-            }
-        }
+//         stage('sonar_analysis') {
+//             steps {
+//                 withSonarQubeEnv('sonar') { 
+//                 sh 'mvn clean package sonar:sonar'           
+//             }
+//             }
+//         }
         
-        stage('deploy_stage') {
-            steps {
-                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://3.210.185.133:8090/')], contextPath: null, war: '**/*.war'
-            }
-        }
+//         stage('deploy_stage') {
+//             steps {
+//                 deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://3.210.185.133:8090/')], contextPath: null, war: '**/*.war'
+//             }
+//         }
     }
 }
 
