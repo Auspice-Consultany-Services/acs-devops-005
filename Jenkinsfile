@@ -1,42 +1,32 @@
 pipeline {
-    agent { label 'slave1' }
+    agent any
+    
     tools {
     maven 'Maven3' 
     }
 
     stages {
-        stage('source_stage') {
+        stage('source') {
             steps {
                 git credentialsId: 'git', url: 'https://github.com/Auspice-Consultany-Services/acs-devops-005.git'
             }
         }
+    
         
-        stage('compile_stage') {
+        stage('build-sonar') {
             steps {
-                sh 'mvn clean compile'           
+                 withSonarQubeEnv('sonar') { 
+                 sh 'mvn clean package sonar:sonar' 
             }
+            
+            }    
         }
         
-        stage('test_stage') {
+        stage('deploy') {
             steps {
-                sh 'mvn clean test'           
+                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://3.208.10.14:8090/')], contextPath: null, war: '**/*.war'
             }
         }
-        
-        
-//         stage('sonar_analysis') {
-//             steps {
-//                 withSonarQubeEnv('sonar') { 
-//                 sh 'mvn clean package sonar:sonar'           
-//             }
-//             }
-//         }
-        
-//         stage('deploy_stage') {
-//             steps {
-//                 deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://3.210.185.133:8090/')], contextPath: null, war: '**/*.war'
-//             }
-//         }
     }
 }
 
