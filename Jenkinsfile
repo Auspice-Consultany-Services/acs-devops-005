@@ -11,22 +11,47 @@ pipeline {
                 git credentialsId: 'git', url: 'https://github.com/Auspice-Consultany-Services/acs-devops-005.git'
             }
         }
-    
         
-        stage('build-sonar') {
+        stage('compile') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
+        
+        stage('test') {
+            steps {
+                sh 'mvn clean test'
+            }
+        }
+        
+        stage('build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        
+        stage('install') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+        
+         stage('sonar') {
             steps {
                  withSonarQubeEnv('sonar') { 
-                 sh 'mvn clean package sonar:sonar' 
+                 sh 'mvn sonar:sonar' 
             }
             
-            }    
-        }
-        
-        stage('deploy') {
+            } 
+            
+         }
+         
+         stage('deploy') {
             steps {
-                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://3.208.10.14:8090/')], contextPath: null, war: '**/*.war'
+                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://3.248.213.206:8080/')], contextPath: null, war: '**/*.war'
             }
         }
+        
     }
 }
 
